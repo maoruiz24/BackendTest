@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MusicTest.Models.Music;
+using MusicTest.Bussiness;
+using MusicTest.Helpers;
 
 namespace MusicTest.Controllers
 {
@@ -6,31 +9,55 @@ namespace MusicTest.Controllers
     [ApiController]
     public class MusicController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
+        private readonly IMusic _music;
+
+        public MusicController(IConfiguration configuration, IMusic music)
+        {
+            _configuration = configuration;
+            _music = music;
+        }
+
+        [Authorize]
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("v1/")]
+        public IActionResult All(int page, int perPage)
         {
-            return new string[] { "value1", "value2" };
+            var songs = _music.AllSongs(page,perPage);
+            return Ok(songs);
         }
 
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [Authorize]
+        [HttpGet("v1/findone/{id}")]
+        public IActionResult FindOne(string id)
         {
-            return "value";
+            var res = _music.OneSong(id);
+            return Ok(res);
         }
 
+        [Authorize]
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Route("v1/create")]
+        public IActionResult Create([FromBody] Song song)
         {
+            var res = _music.Create(song);
+            return Ok(res);
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Authorize]
+        [HttpPut]
+        public IActionResult Update([FromBody] Song song)
         {
+            var res = _music.Update(song);
+            return Ok(res);
         }
 
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [Authorize]
+        [HttpDelete("v1/{id}")]
+        public IActionResult Delete(string id)
         {
+            var res = _music.Delete(id);
+            return Ok(res);
         }
     }
 }
