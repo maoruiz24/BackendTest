@@ -209,11 +209,11 @@ namespace MusicTest.Bussines
 
                 var document = MongoContext.Database().GetCollection<Song>("Song");
 
-                var _id = ObjectId.Parse(Id);
-                document.DeleteOne(Builders<Song>.Filter.Eq(x => x.Id, _id));
-
                 var res = OneSong(Id);
                 var songs = res.Songs;
+
+                var _id = ObjectId.Parse(Id);
+                document.DeleteOne(Builders<Song>.Filter.Eq(x => x.Id, _id));
 
                 return new ResponseMusic
                 {
